@@ -14,3 +14,5 @@ VOLUME ["/volumes"]
 
 ENTRYPOINT /usr/bin/entrypoint.sh
 CMD ""
+
+EXPOSE 111 24007 2049 38465 38466 38467 1110 4045
