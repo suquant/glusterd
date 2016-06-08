@@ -13,4 +13,6 @@ COPY entrypoint.sh /usr/bin/entrypoint.sh
 ENTRYPOINT /usr/bin/entrypoint.sh
 CMD ""
 
+VOLUME ["/var/lib/glusterd", "/mnt/brick"]
+
 EXPOSE 111 24007 2049 38465 38466 38467 1110 4045
