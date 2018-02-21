@@ -1,19 +1,22 @@
-FROM ubuntu-debootstrap:trusty
+FROM ubuntu:bionic
 MAINTAINER George Kutsurua <g.kutsurua@gmail.com>
 
-RUN apt-get update && apt-get upgrade -y &&\
-    apt-get install -y software-properties-common &&\
-    add-apt-repository -y ppa:gluster/glusterfs-3.6 &&\
-    apt-get update &&\
-    apt-get install -y glusterfs-server fuse &&\
-    apt-get clean
+RUN apt update && apt upgrade -y &&\
+    DEBIAN_FRONTEND=noninteractive \
+        apt install -y glusterfs-server glusterfs-client attr rsync tar sudo xfsprogs \
+                       thin-provisioning-tools lvm2 && \
+    # Configure LVM to create LVs and snapshots
+    sed -i.save -e "s#udev_sync = 1#udev_sync = 0#" \
+        -e "s#udev_rules = 1#udev_rules = 0#" \
+        -e "s#use_lvmetad = 1#use_lvmetad = 0#" /etc/lvm/lvm.conf && \
+    apt -y clean
 
-COPY ["entrypoint.sh", "kubernetes-glusterd", "/"]
+COPY ["entrypoint.sh", "/"]
 
-VOLUME ["/var/lib/glusterd", "/mnt/brick"]
+VOLUME ["/var/lib/glusterd"]
 
-EXPOSE 111 111/udp 24007 24008 38465 38466 38467 2049 \
-       49152 49153 49154 49155
+# For client communication 49152-49251
+EXPOSE 24007
 
 ENTRYPOINT /entrypoint.sh
 CMD ""

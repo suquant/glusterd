@@ -6,8 +6,9 @@
 # fail hard and fast even on pipelines
 set -meo pipefail
 
-# set debug based on envvar
-[[ $DEBUG ]] && set -x
 service rpcbind start
+
+# Disable rdma
+sed -i.save -e "s#,rdma##" /etc/glusterfs/glusterd.vol
 
 exec glusterd --log-file=- --no-daemon $@
